@@ -1,20 +1,24 @@
 <?php
+
 namespace App\Repository;
 
-use App\Entity\Personne;
-use App\Entity\Client;
+use App\Core\Database;
+use App\Entity\Personne; 
 use App\Entity\Vendeur;
-use App\Config\Core\Database;
+use App\Entity\EnumType;
+use App\Entity\Client;
 
-class PersonneRepository {
-    
+class PersonneRepository
+{
     private \PDO $pdo;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->pdo = Database::getConnection();
     }
 
-    public function selectAll(): array {
+    public function selectAll(): array
+    {
         $stmt = $this->pdo->query("SELECT * FROM personne");
         $rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
 
@@ -25,7 +29,8 @@ class PersonneRepository {
         return $personnes;
     }
 
-    public function findById(int $id): ?Personne {
+    public function findById(int $id): ?Personne
+    {
         $stmt = $this->pdo->prepare("SELECT * FROM personne WHERE id = :id");
         $stmt->execute(['id' => $id]);
         $row = $stmt->fetch(\PDO::FETCH_ASSOC);
@@ -33,12 +38,22 @@ class PersonneRepository {
         return $row ? $this->mapToEntity($row) : null;
     }
 
-    private function mapToEntity(array $row): Personne {
-        if (isset($row['type']) && strtolower($row['type']) === 'vendeur') {
-            return Vendeur::toObject($row);
-        } else {
-            return Client::toObject($row);
-        }
+    public function findByEmail(string $email): ?Personne
+    {
+        $stmt = $this->pdo->prepare("SELECT * FROM personne WHERE email = ?");
+        $stmt->execute([$email]);
+        $row = $stmt->fetch(\PDO::FETCH_ASSOC);
+
+        return $row ? $this->mapToEntity($row) : null;
     }
 
+    private function mapToEntity(array $row): Personne
+    {
+        if ($row && strtolower($row['type']) === strtolower(EnumType::Vendeur->value)) {
+            return Vendeur::toObject($row);
+        } elseif ($row && strtolower($row['type']) === strtolower(EnumType::Client->value)) {
+            return Client::toObject($row);
+        }
+        return Personne::toObject($row);
+    }
 }

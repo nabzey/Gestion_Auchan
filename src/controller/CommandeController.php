@@ -7,13 +7,13 @@ class CommandeController extends AbstractController{
    
     public function index(){
         
-            $this->renderHtml('Liste.html'); // ✅ Juste le nom du fichier
+            $this->renderHtml('Liste.html.php'); // ✅ Juste le nom du fichier
     }
     public function store(){
 
     }
     public function create(){
-                $this->renderHtml('Form.html');
+                $this->renderHtml('Form.html.php');
 
     }
     public function destroy(){

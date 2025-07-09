@@ -2,36 +2,44 @@
 
 namespace App\Service;
 
-use App\Core\AbstractController;
-use App\Service\SecurityService;
+use App\Repository\PersonneRepository;
 
-
-class SecurityController extends AbstractController
+class SecurityService 
 {
-    private SecurityService $securityService;
+    private PersonneRepository $personneRepository;
 
     public function __construct()
     {
-        $this->securityService = new SecurityService(); // Assure-toi qu'il n'attend pas d'arguments ou injecte PersonneRepository
+        $this->personneRepository = new PersonneRepository(); 
     }
+
+    public function seConnecter($login, $password): void
+    {
+        $user = $this->findByEmail($login);
+       
+    }
+
 
     public function login(): void
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             try {
-                $this->securityService->login($_POST); // tentative de connexion
-                header('Location: /commandes/liste');  // accès autorisé
+                $this->securityService->login($_POST); 
+                header('Location: /commandes/liste');  
                 exit;
             } catch (\Exception $e) {
-                // erreur d'identifiants : on reste sur la page login avec un message d'erreur
-                $this->renderHtml('login.html', [
+                $this->renderHtml('login.html.php', [
                     'error' => $e->getMessage()
                 ]);
                 return;
             }
         }
 
-        // GET: afficher simplement le formulaire
-        $this->renderHtml('login.html');
+        $this->renderHtml('login.html.php');
+    }
+    
+    public function findByEmail(string $email)
+    {
+        return $this->personneRepository->findByEmail($email);
     }
 }

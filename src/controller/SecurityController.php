@@ -11,20 +11,22 @@ class SecurityController extends AbstractController
 
     public function __construct(SecurityService $SecurityService)
     {
-        $this->SecurityService = $SecurityService;
+       $zey= $this->SecurityService = $SecurityService;
     }
 public function login(): void
 {
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+         
         try {
             $this->SecurityService->login($_POST);
             header('Location: /commandes/liste'); 
             exit;
         } catch (\Exception $e) {
-            $this->renderHtml('security/login.html', ['error' => $e->getMessage()]);
+
+            $this->renderHtml('security/login.html.php', ['error' => $e->getMessage()]);
         }
     } else {
-        $this->renderHtml('security/login.html');
+        $this->renderHtml('security/login.html.php');
     }
 }
 

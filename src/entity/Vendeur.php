@@ -1,7 +1,7 @@
 <?php
 namespace App\Entity;
 
- namespace App\Entity;
+use App\Entity\EnumType;
 
 class Vendeur extends Personne
 {
@@ -9,12 +9,12 @@ class Vendeur extends Personne
     private $password;
     private $telephone;
 
-    public function __construct($id, $nom, $prenom, $telephone, $login = '') 
+    public function __construct($id, $nom, $prenom, $telephone, $login = '', $password = '')
     {
-        parent::__construct($id, $nom, $prenom);
+        parent::__construct($id, $nom, $prenom, EnumType::Vendeur);
         $this->telephone = $telephone;
         $this->login = $login;
-        $this->type = Type::Vendeur; 
+        $this->password = $password;
     }
 
     public function getTelephone(): string
@@ -22,12 +22,12 @@ class Vendeur extends Personne
         return $this->telephone;
     }
 
-    public function setTelephone(string $telephone): void 
+    public function setTelephone(string $telephone): void
     {
         $this->telephone = $telephone;
     }
 
-    public function getLogin(): string 
+    public function getLogin(): string
     {
         return $this->login;
     }
@@ -45,5 +45,17 @@ class Vendeur extends Personne
     public function setPassword(string $password): void
     {
         $this->password = $password;
+    }
+
+    public static function toObject(array $row): static
+    {
+        return new static(
+            $row['id'],
+            $row['nom'],
+            $row['prenom'],
+            $row['telephone'] ?? '',
+            $row['login'] ?? '',
+            $row['password'] ?? ''
+        );
     }
 }

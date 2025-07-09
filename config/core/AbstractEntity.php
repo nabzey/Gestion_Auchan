@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Config\Core;
+namespace App\Core;
 
 abstract class AbstractEntity
 {

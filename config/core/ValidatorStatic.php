@@ -1,24 +1,40 @@
 <?php
 
- namespace App\Core;
+namespace App\Core;
 
- class ValidatorStatic
- {
-    public static function personne (array $data): array
+class ValidatorStatic
+{
+    public static function isEmail($key, $value, $message)
     {
-        $errors = [];
-
-        if (empty($data['nom'])) {
-            $errors[] = 'Le nom est obligatoire.';
+        if (!filter_var($value, FILTER_VALIDATE_EMAIL)) {
+            self::addError($key, $message);
+            return false;
         }
-
-        if (empty($data['prenom'])) {
-            $errors[] = 'Le prénom est obligatoire.';
-        }
-
-        if (empty($data['email']) || !filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
-            $errors[] = 'L\'email est invalide.';
-        }
-        return $errors;
+        return true;
     }
- }
+
+    public static function isEmpty($key, $value, $message)
+    {
+        if (empty($value)) {
+            self::addError($key, $message);
+            return false;
+        }
+        return true;
+    }
+
+    function getErrors(): array
+    {
+        return $_SESSION['errors'] ?? [];
+    }
+
+    public static function addError($key, $message)
+    {
+        $_SESSION['errors'][$key] = $message;
+    }
+
+    function isValid(): bool
+    {
+        return empty($this->getErrors());
+    }
+}
+    
